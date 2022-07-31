@@ -9,7 +9,7 @@ filesets:
     files:
       - mif.vhd
     file_type: vhdlSource-2008
-    logical_name: init
+    logical_name: linit
   tb:
     files:
       - tb_mif.vhd

@@ -11,6 +11,8 @@ library ltypes;
 -- Mif package provides functions for reading MIF (Memory Information File) files.
 package mif is
 
+   -- Read whole MIF file content.
+   impure function read(filepath : string) return types.bitv_vector;
    -- Read data from particular address.
    impure function read(filepath : string; addr : natural) return bit_vector;
 
@@ -53,6 +55,28 @@ package body mif is
    end function;
 
 
+   impure function read(filepath : string) return types.bitv_vector is
+      variable attr : t_file_attributes := get_file_attributes(filepath);
+      variable mem : types.bitv_vector(0 to attr.line_count - 1)(attr.data_width - 1 downto 0);
+      variable bv : bit_vector(attr.data_width - 1 downto 0);
+      variable l : line;
+      file f : text open read_mode is filepath;
+      variable ok : boolean;
+   begin
+      for i in 0 to attr.line_count - 1 loop
+         readline(f, l);
+         read(l, bv, ok);
+         if ok = false then
+            report
+               filepath & ": line " & to_string(i + 1) & ": bit_vector read failure"
+               severity failure;
+         end if;
+         mem(i) := bv;
+      end loop;
+      return mem;
+   end function;
+
+
    impure function read(filepath : string; addr : natural) return bit_vector is
       variable attr : t_file_attributes := get_file_attributes(filepath);
       variable bv : bit_vector(attr.data_width - 1 downto 0);
@@ -83,33 +107,19 @@ package body mif is
    end function;
 
 
+   alias read_bvv is read[string return types.bitv_vector];
+   alias read_bv  is read[string, natural return bit_vector];
+
+
    impure function read(filepath : string) return types.slv_vector is
-      variable attr : t_file_attributes := get_file_attributes(filepath);
-      variable mem : types.slv_vector(0 to attr.line_count - 1)(attr.data_width - 1 downto 0);
-      variable bv : bit_vector(attr.data_width - 1 downto 0);
-      variable l : line;
-      file f : text open read_mode is filepath;
-      variable ok : boolean;
    begin
-      for i in 0 to attr.line_count - 1 loop
-         readline(f, l);
-         read(l, bv, ok);
-         if ok = false then
-            report
-               filepath & ": line " & to_string(i + 1) & ": bit_vector read failure"
-               severity failure;
-         end if;
-         mem(i) := to_std_logic_vector(bv);
-      end loop;
-      return mem;
+      return types.to_slv_vector(read_bvv(filepath));
    end function;
 
 
    impure function read(filepath : string; addr : natural) return std_logic_vector is
-      variable attr : t_file_attributes := get_file_attributes(filepath);
-      variable bv : bit_vector(attr.data_width - 1 downto 0) := read(filepath, addr);
    begin
-      return to_std_logic_vector(bv);
+      return to_std_logic_vector(read_bv(filepath, addr));
    end function;
 
 end package body;
