@@ -1,6 +1,6 @@
 # vhdl-init
 
-VHDL library containing miscellaneous register entities.
+VHDL library containing various code related to different aspects of initialization (both static and dynamic).
 
 ## Content
 
