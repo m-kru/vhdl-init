@@ -1,0 +1,27 @@
+CAPI=2:
+
+name: mkru:vhdl-init:mif
+
+filesets:
+  src:
+    depend:
+      - mkru:vhdl:types
+    files:
+      - mif.vhd
+    file_type: vhdlSource-2008
+    logical_name: init
+  tb:
+    files:
+      - tb_mif.vhd
+    file_type: vhdlSource-2008
+
+targets:
+  default:
+    filesets:
+      - src
+  tb_mif:
+    default_tool: ghdl
+    toplevel: tb_mif
+    filesets:
+      - src
+      - tb
