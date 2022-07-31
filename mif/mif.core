@@ -5,7 +5,7 @@ name: mkru:vhdl-init:mif
 filesets:
   src:
     depend:
-      - mkru:vhdl:types
+      - mkru:vhdl-types:types
     files:
       - mif.vhd
     file_type: vhdlSource-2008
